@@ -1,0 +1,41 @@
+<h2>Нова задача</h2>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Додати</button>
+</form>
+
+
+<hr>
+
+<form method="get" style="margin-bottom: 20px;">
+    <label for="sort">Сортувати за:</label>
+    <select name="sort" id="sort" onchange="this.form.submit()">
+        <option value="created" {% if request.GET.sort == "created" %}selected{% endif %}>Датою створення</option>
+        <option value="deadline" {% if request.GET.sort == "deadline" %}selected{% endif %}>Дедлайном</option>
+    </select>
+</form>
+<h2>Список задач</h2>
+<ul>
+    {% for task in tasks %}
+    <li>
+        <form method="POST" action="{% url 'toggle_task' task.id %}">
+            {% csrf_token %}
+            <br>
+            {{ task.description }}
+            {% if task.deadline %}
+            <br><strong>Deadline:</strong> {{ task.deadline|date:"Y-m-d H:i" }}<br>
+            {% endif %}
+            <br>
+            <button type="submit">
+                {% if task.completed %} Зняти виконання {% else %} Позначити як виконане {% endif %}
+            </button>
+        </form>
+    </li>
+    
+    
+    
+    {% empty %}
+        <li>Немає задач</li>
+    {% endfor %}
+</ul>
