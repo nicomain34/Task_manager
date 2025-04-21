@@ -5,6 +5,12 @@
     <button type="submit">Додати</button>
 </form>
 
+<div>
+    <a href="?filter=all" {% if filter_option == 'all' %}style="font-weight: bold;"{% endif %}>Усі</a> |
+    <a href="?filter=completed" {% if filter_option == 'completed' %}style="font-weight: bold;"{% endif %}>Виконані</a> |
+    <a href="?filter=incomplete" {% if filter_option == 'incomplete' %}style="font-weight: bold;"{% endif %}>Невиконані</a>
+  </div>
+  
 
 <hr>
 
@@ -13,6 +19,8 @@
     <select name="sort" id="sort" onchange="this.form.submit()">
         <option value="created" {% if request.GET.sort == "created" %}selected{% endif %}>Датою створення</option>
         <option value="deadline" {% if request.GET.sort == "deadline" %}selected{% endif %}>Дедлайном</option>
+        <option value="completed" {% if request.GET.sort == "completed" %}selected{% endif %}>Статус виконання</option>
+
     </select>
 </form>
 <h2>Список задач</h2>
@@ -22,7 +30,11 @@
         <form method="POST" action="{% url 'toggle_task' task.id %}">
             {% csrf_token %}
             <br>
-            {{ task.description }}
+            {% if task.completed %}
+                ✅ {{ task.description }}
+            {% else %}
+                ⏰ {{ task.description }}
+            {% endif %}
             {% if task.deadline %}
             <br><strong>Deadline:</strong> {{ task.deadline|date:"Y-m-d H:i" }}<br>
             {% endif %}
